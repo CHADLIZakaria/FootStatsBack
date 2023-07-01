@@ -1,6 +1,7 @@
 package com.zchadli05.footStatsBack.controller;
 
-import org.springframework.context.annotation.Profile;
+import com.zchadli05.footStatsBack.model.Coach.CoachInfo.CoachResponse;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,10 +22,13 @@ import com.zchadli05.footStatsBack.ws_service.MicroserviceFootStats;
 
 import lombok.RequiredArgsConstructor;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-@Profile("prod")
 public class FootStatsController {
     
     private final MicroserviceFootStats microserviceFootStats;
@@ -51,21 +55,24 @@ public class FootStatsController {
         return microserviceFootStats.fixture(fixture);
     }
 
-
-
     @RequestMapping(value = "/players", method = RequestMethod.GET)
     public FootStatResponse<PlayerInfoResponse> playerInfo(@RequestParam("id") Long idPlayer, @RequestParam("season") Long season) {
         return microserviceFootStats.playerInfo(idPlayer, season);
     }
 
     @RequestMapping(value = "/trophies", method = RequestMethod.GET)
-    public FootStatResponse<PlayerTrophiesResponse> playerTrophies(@RequestParam("player") Long player) {
-        return microserviceFootStats.playerTrophies(player);
+    public FootStatResponse<PlayerTrophiesResponse> playerTrophies(@RequestParam(required=false, name="player") Long player, @RequestParam(required=false, name="coach") Long coach) {
+        return microserviceFootStats.playerTrophies(player, coach);
     }
 
     @RequestMapping(value = "/transfers", method = RequestMethod.GET)
     public FootStatResponse<PlayerTransferResponse> playerTransfers(@RequestParam("player") Long player) {
         return microserviceFootStats.playerTransfers(player);
+    }
+
+    @RequestMapping(value = "/seasons", method = RequestMethod.GET)
+    public FootStatResponse<Integer> playerSeasons(@RequestParam("player") Long player)  {
+        return microserviceFootStats.playerSeasons(player);
     }
 
     @RequestMapping(value = "/standings", method = RequestMethod.GET)
@@ -82,5 +89,13 @@ public class FootStatsController {
     public FootStatResponse<LeagueStatsResponse> topassists(@RequestParam("season") Long season, @RequestParam("league") Long league)  {
         return microserviceFootStats.topassists(season, league);
     }
+    @RequestMapping(value = "/coachs", method = RequestMethod.GET)
+    public FootStatResponse<CoachResponse> coach(@RequestParam("id") Long id) throws FileNotFoundException {
+        System.out.println(microserviceFootStats.coach(id));
+        return microserviceFootStats.coach(id);
+    }
+
+
+
 
 }
